@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
 from .forms import LoginForm
 
@@ -25,4 +26,11 @@ def login_view(request):
         "form": form,
     }
     template_name = "account/login.html"
+    return render(request, template_name, context)
+
+
+@login_required
+def dashboard(request):
+    template_name = "account/dashboard.html"
+    context = {}
     return render(request, template_name, context)
