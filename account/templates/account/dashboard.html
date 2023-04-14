@@ -6,5 +6,6 @@ Dashboard
 
 {% block content %}
 <h1>Dashboad</h1>
-<p>Welcome to your dashboard</p>
+<p>Welcome to your dashboard {{request.user}}.</p>
+<p>You can <a href="{% url 'edit' %}">edit your profile</a> or <a href="{% url 'password_change' %}">change your password</a>
 {% endblock content %}

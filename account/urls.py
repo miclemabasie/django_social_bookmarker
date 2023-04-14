@@ -12,6 +12,7 @@ urlpatterns = [
     path("logout", auth_views.LogoutView.as_view(), name="logout"),
     path("", views.dashboard, name="dashboard"),
     path("register/", views.register, name="register"),
+    path("edit/", views.edit, name="edit"),
     # Change password urls
     path(
         "password_change/",

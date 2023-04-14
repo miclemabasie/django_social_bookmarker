@@ -2,8 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
-from .forms import LoginForm, UserRgistrationForm
 from django.contrib.auth.models import User
+from .forms import LoginForm, UserRgistrationForm, UserEditForm, ProfileEditForm
+from .models import Profile
 
 
 def login_view(request):
@@ -46,6 +47,7 @@ def register(request):
         password = user_form.cleaned_data.get("password")
         new_user.set_password(password)
         new_user.save()
+        Profile.objects.create(user=new_user)
         template_name = "account/register_done.html"
         context = {
             "new_user": new_user,
@@ -57,4 +59,30 @@ def register(request):
 
     template_name = "account/register.html"
     context = {"user_form": user_form}
+    return render(request, template_name, context)
+
+
+@login_required
+def edit(request):
+    user = request.user
+    user_profile = Profile.objects.get(user=user)
+    if request.method == "POST":
+        user_form = UserEditForm(instance=user, data=request.POST)
+        profile_form = ProfileEditForm(
+            instance=user_profile, data=reqeust.POST, files=request.FILES
+        )
+
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
+
+    else:
+        user_form = UserEditForm(instance=user)
+        profile_form = ProfileEditForm(instance=user_profile)
+
+    template_name = "account/edit.html"
+    context = {
+        "user_form": user_form,
+        "profile_form": profile_form,
+    }
     return render(request, template_name, context)
