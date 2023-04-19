@@ -66,12 +66,6 @@ TEMPLATES = [
     },
 ]
 
-AUTHENTICATION_BACKENDS = [
-    "django.contrib.auth.backends.ModelBackend",
-    "account.authentication.EmailAuthBackend",
-]
-
-
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 WSGI_APPLICATION = "bookmarks.wsgi.application"

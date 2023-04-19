@@ -15,4 +15,4 @@ DATABASES = {
 }
 
 
-# ALLOWERD_HOSTS = env("ALLOWED_HOST").split(" ")
+ALLOWERD_HOSTS = env("ALLOWED_HOST").split(" ")
