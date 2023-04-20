@@ -33,7 +33,9 @@ DJANGO_APPS = [
 
 CUSTOM_APPS = [
     "account.apps.AccountConfig",
+    "image.apps.ImageConfig",
 ]
+
 
 THIRD_PARTY_APPS = []
 INSTALLED_APPS = CUSTOM_APPS + DJANGO_APPS + THIRD_PARTY_APPS
