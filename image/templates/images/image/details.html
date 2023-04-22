@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+
+
+{% block title %}
+Image Details
+{% endblock title%}
+
+
+{% block content %}
+<h1>{{image.title}} </h1>
+<img src="{{ image.url }}" class="image-preview">
+<h3>Created by {{user.username}}</h3>
+
+{% endblock content %}
