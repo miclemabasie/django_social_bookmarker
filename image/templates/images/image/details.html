@@ -1,15 +1,23 @@
 {% extends 'base.html' %}
 
-
-
 {% block title %}
 Image Details
 {% endblock title%}
 
-
 {% block content %}
 <h1>{{image.title}} </h1>
-<img src="{{ image.url }}" class="image-preview">
+<img src="{{ image.image.url }}" class="image-preview">
 <h3>Created by {{user.username}}</h3>
 
+
+<div class="image-likes">
+    {% for user in iamge.user_likes.all %}
+    <div class="">
+        <img src="{{ user.profile.photo.url }}" alt="">
+        <p>{{ user.first_name }}</p>
+    </div>
+    {% empty %}
+    Nobody likes this image yet.
+    {% endfor %}
+</div>
 {% endblock content %}
