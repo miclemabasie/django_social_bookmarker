@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load thumbnail %}
 
 {% block title %}
 Image Details
@@ -6,14 +7,14 @@ Image Details
 
 {% block content %}
 <h1>{{image.title}} </h1>
-<img src="{{ image.image.url }}" class="image-preview">
+<img src="{%thumbnail image.image 300x0 %}" class="image-preview">
 <h3>Created by {{user.username}}</h3>
 
 
 <div class="image-likes">
-    {% for user in iamge.user_likes.all %}
+    {% for user in image.user_likes.all %}
     <div class="">
-        <img src="{{ user.profile.photo.url }}" alt="">
+        <img src="{{  user.profile.photo.url }}" class="image-detail" alt="">
         <p>{{ user.first_name }}</p>
     </div>
     {% empty %}

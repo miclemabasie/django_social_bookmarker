@@ -39,6 +39,7 @@ CUSTOM_APPS = [
 
 THIRD_PARTY_APPS = [
     "django_extensions",
+    "easy_thumbnails",
 ]
 INSTALLED_APPS = CUSTOM_APPS + DJANGO_APPS + THIRD_PARTY_APPS
 
@@ -117,7 +118,7 @@ STATIC_ROOT = "staticfiles"
 
 
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "madia"
+MEDIA_ROOT = BASE_DIR / "media"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
