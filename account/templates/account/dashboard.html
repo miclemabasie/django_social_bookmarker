@@ -6,7 +6,7 @@ Dashboard
 
 {% block content %}
 <h1>Dashboad</h1>
-<p>Hola, {{request.user}}!</p>
+<p class="text-red-600 mt-200">Hola, {{request.user}}!</p>
 password</a>
 {% with total_images_created=request.user.images_created.count %}
 <p>Welcom to your dashboad. You have bookmarked {{total_images_created}} image{{total_images_created|pluralize}}.</p>
