@@ -5,20 +5,82 @@
 Image Details
 {% endblock title%}
 
+
+
 {% block content %}
-<h1>{{image.title}} </h1>
-<img src="{%thumbnail image.image 300x0 %}" class="image-preview">
-<h3>Created by {{user.username}}</h3>
+<div class="flex flex-row items-center justify-between">
+    <div class="flex items-center flex-col w-3/4">
+        <h1 class="text-4xl py-3 text-center">{{image.title|capfirst}} </h1>
+        <img class="md:w-1/2 md:align-center" src="{%thumbnail image.image 300x0 %}" class="image-preview">
+        <h3 class="text-3xl py-4 ">Created by {{user.username}}</h3>
 
 
-<div class="image-likes">
-    {% for user in image.user_likes.all %}
-    <div class="">
-        <img src="{{  user.profile.photo.url }}" class="image-detail" alt="">
-        <p>{{ user.first_name }}</p>
+        <div class="image-likes">
+            {% with users=image.users_like.all total_likes=image.users_like.count%}
+            {% for user in users %}
+            <div class="">
+                {% if user.profile.photo %}
+                <img src="{{  user.profile.photo.url }}" class="image-detail" alt="">
+                {% endif %}
+                <p>{{ user.username }}</p>
+            </div>
+            {% empty %}
+            <p class="text-gray-300">Nobody likes this image yet.</p>
+            {% endfor %}
+            {% endwith %}
+        </div>
     </div>
-    {% empty %}
-    Nobody likes this image yet.
-    {% endfor %}
+
+    <div class="md:w-1/3">
+        <div class="flex flex-row">
+            <p class="my-3 px-6 pt-2 text-brightRed bg-white rounded-full">{{image.users_like.count}} likes</p>
+            <a href="#" data-id="{{image.id}}" id="like-btn"
+                data-action="{% if request.user in image.users_like.all %}un{% endif %}like"
+                class="like mt-3 p-3 px-6 pt-2 text-white bg-brightRed rounded-full hover:bg-brightRedLight">
+                {% if request.user not in image.users_like.all %}
+                Like
+                {% else %}
+                Unlike
+                {% endif %}
+            </a>
+        </div>
+        <div class="mt-4">
+            <p class="bg-veryLightGray">{{image.description}}</p>
+        </div>
+
+
+
+    </div>
 </div>
+
 {% endblock content %}
+
+
+{% block domready %}
+    let like_button = document.getElementById("like-btn")
+    console.log(like_button)
+    const imageID = document.getElementById("like-btn").dataset.id
+    const action = document.getElementById("like-btn").dataset.action
+    const url = 'images/like/'
+    like_button.addEventListener('click', (e) => {
+        e.preventDefault()
+        console.log(imageID, action)
+        $.ajax({
+            type: "post",
+            url: "{% url 'image:like' %}",
+            data: {
+                'csrfmiddlewaretoken': csrftoken,
+                'image_id': imageID,
+                'action': action
+            },
+            success: function(response){
+                console.log("Response", response)
+            },
+            error: function(error){
+                console.log("error", error)
+            }
+        })
+        
+    })
+
+{% endblock domready %}

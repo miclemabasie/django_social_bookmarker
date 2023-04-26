@@ -52,8 +52,9 @@ def image_detail(request, slug):
 @login_required
 @require_POST
 def image_like(request):
-    image_id = request.POST.get("id")
+    image_id = request.POST.get("image_id")
     action = request.POST.get("action")
+    print("#################We are testing")
     if image_id and action:
         try:
             image = get_object_or_404(Image, id=image_id)
@@ -65,3 +66,15 @@ def image_like(request):
         except:
             pass
     return JsonResponse({"status": "error"})
+
+
+@login_required
+def list_view(request):
+    images = Image.objects.all()
+
+    template_name = "images/image/list.html"
+    context = {
+        "images": images,
+    }
+
+    return render(request, template_name, context)

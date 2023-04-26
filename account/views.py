@@ -69,7 +69,7 @@ def edit(request):
     if request.method == "POST":
         user_form = UserEditForm(instance=user, data=request.POST)
         profile_form = ProfileEditForm(
-            instance=user_profile, data=reqeust.POST, files=request.FILES
+            instance=user_profile, data=request.POST, files=request.FILES
         )
 
         if user_form.is_valid() and profile_form.is_valid():
