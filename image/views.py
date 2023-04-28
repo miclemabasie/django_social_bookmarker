@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
+from django.http import HttpResponse
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from .forms import ImageCreateForm
 from .models import Image
+import time
 
 
 @login_required
@@ -61,16 +64,41 @@ def image_like(request):
             if action == "like":
                 image.users_like.add(request.user)
                 print("Added")
-                data['count'] = image.users_like.all().count()
+                data["count"] = image.users_like.all().count()
             else:
                 image.users_like.remove(request.user)
                 print("subtract")
-                data['count'] = image.users_like.all().count()
-            data['status'] = "ok"
+                data["count"] = image.users_like.all().count()
+            data["status"] = "ok"
             return JsonResponse(data, safe=False)
         except:
             pass
     return JsonResponse({"status": "error"})
+
+
+@login_required
+def image_list(request):
+    images = Image.objects.all()
+    paginator = Paginator(images, 3)
+    page = request.GET.get("page")
+    time.sleep(3)
+    try:
+        images = paginator.page(page)
+    except PageNotAnInteger:
+        # If page is not an integer deliver the first page
+        images = paginator.page(1)
+    except EmptyPage:
+        if request.is_ajax():
+            # if the request is ajax and the page is not of range
+            # return an empty page
+            return HttpResponse("")
+        # if page is out of range deliver last page of results
+    context = {"section": "images", "images": images}
+    if request.is_ajax():
+        template_name = "images/image/list_ajax.html"
+        return render(request, template_name, context)
+    template_name = "images/image/list.html"
+    return render(request, template_name, context)
 
 
 @login_required
