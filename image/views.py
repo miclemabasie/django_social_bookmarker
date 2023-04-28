@@ -54,15 +54,20 @@ def image_detail(request, slug):
 def image_like(request):
     image_id = request.POST.get("image_id")
     action = request.POST.get("action")
-    print("#################We are testing")
+    data = {}
     if image_id and action:
         try:
             image = get_object_or_404(Image, id=image_id)
             if action == "like":
                 image.users_like.add(request.user)
+                print("Added")
+                data['count'] = image.users_like.all().count()
             else:
                 image.users_like.remove(request.user)
-            return JsonResponse({"status": "ok"})
+                print("subtract")
+                data['count'] = image.users_like.all().count()
+            data['status'] = "ok"
+            return JsonResponse(data, safe=False)
         except:
             pass
     return JsonResponse({"status": "error"})
