@@ -34,6 +34,7 @@ DJANGO_APPS = [
 CUSTOM_APPS = [
     "account.apps.AccountConfig",
     "image.apps.ImageConfig",
+    "actions.apps.ActionsConfig",
 ]
 
 

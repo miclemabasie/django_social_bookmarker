@@ -8,7 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib import messages
 from .forms import ImageCreateForm
 from .models import Image
-import time
+from actions.utils import create_action
 
 
 @login_required
@@ -23,6 +23,7 @@ def image_create(request):
             # Assign the current user to the image
             new_item.user = request.user
             new_item.save()
+            create_action(request.user, "bookmarked image", new_item)
             messages.success(request, "Image added successfully")
 
             # redirect to the newly created item details
@@ -65,6 +66,7 @@ def image_like(request):
                 image.users_like.add(request.user)
                 print("Added")
                 data["count"] = image.users_like.all().count()
+                create_action(request.user, "likes", image)
             else:
                 image.users_like.remove(request.user)
                 print("subtract")

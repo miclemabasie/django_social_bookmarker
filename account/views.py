@@ -1,10 +1,13 @@
 from django.shortcuts import render, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_POST
 from django.contrib.auth import login, authenticate, logout
 from django.contrib.auth.models import User
 from .forms import LoginForm, UserRgistrationForm, UserEditForm, ProfileEditForm
-from .models import Profile
+from .models import Profile, Contact
+from actions.utils import create_action
+from actions.models import Action
 
 
 def login_view(request):
@@ -33,8 +36,19 @@ def login_view(request):
 
 @login_required
 def dashboard(request):
+    actions = Action.objects.exclude(user=request.user)
+    following_ids = request.user.following.values_list("id", flat=True)
+    if following_ids:
+        # if user is following others, retrieve only their actions
+        actons = actions.filter(user_id__in=following_ids)
+    actions = actions.select_related("user", "user__profile").prefetch_related(
+        "target"
+    )[:10]
     template_name = "account/dashboard.html"
-    context = {}
+    context = {
+        "section": "dashboard",
+        "actions": actions,
+    }
     return render(request, template_name, context)
 
 
@@ -53,6 +67,7 @@ def register(request):
             "new_user": new_user,
             "username": user_form.cleaned_data.get("username"),
         }
+        create_action(request.user, "created account")
         return render(request, template_name, context)
     else:
         print(user_form.errors)
@@ -109,3 +124,26 @@ def user_detail(request, username):
         "total_followers": user.followers.count(),
     }
     return render(request, template_name, context)
+
+
+@require_POST
+@login_required
+def user_follow(request):
+    user_id = request.POST.get("id")
+    action = request.POST.get("action")
+    if user_id and action:
+        try:
+            user = User.objects.get(id=user_id)
+            if action == "follow":
+                Contact.objects.get_or_create(
+                    user_from=request.user,
+                    user_to=user,
+                )
+                create_action(request.user, "following", user)
+            else:
+                Contact.objects.filter(user_from=request.user, user_to=user).delete()
+                create_action(request.user, "stoped followig", user)
+            return JsonResponse({"status": "ok"})
+        except User.DoesNotExist:
+            return JsonResponse({"status": "error"})
+    return JsonResponse({"status": "error"})
