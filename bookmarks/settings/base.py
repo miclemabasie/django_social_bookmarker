@@ -128,3 +128,12 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 LOGIN_REDIRECT_URL = "dashboard"
 LOGIN_URL = "login"
 LOGOUT_URL = "logout"
+
+
+from django.urls import reverse_lazy
+
+# Dynamically adding the get_absolute_url() method to the user model
+# Probably because we cant directly edit the Built in user model just like so
+ABSOLUTE_URL_OVERRIDES = {
+    "auth.user": lambda u: reverse_lazy("user_detail", args=[u.username])
+}

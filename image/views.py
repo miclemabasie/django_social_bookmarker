@@ -79,9 +79,8 @@ def image_like(request):
 @login_required
 def image_list(request):
     images = Image.objects.all()
-    paginator = Paginator(images, 3)
+    paginator = Paginator(images, 6)
     page = request.GET.get("page")
-    time.sleep(3)
     try:
         images = paginator.page(page)
     except PageNotAnInteger:

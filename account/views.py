@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate, logout
@@ -84,5 +84,28 @@ def edit(request):
     context = {
         "user_form": user_form,
         "profile_form": profile_form,
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def user_list(request):
+    users = User.objects.filter(is_active=True)
+    template_name = "account/user/list.html"
+    context = {
+        "section": "people",
+        "users": users,
+    }
+    return render(request, template_name, context)
+
+
+@login_required
+def user_detail(request, username):
+    user = get_object_or_404(User, username=username, is_active=True)
+    template_name = "account/user/detail.html"
+    context = {
+        "section": "people",
+        "user": user,
+        "total_followers": user.followers.count(),
     }
     return render(request, template_name, context)
