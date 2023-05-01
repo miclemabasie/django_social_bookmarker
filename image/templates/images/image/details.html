@@ -28,6 +28,9 @@ Image Details
             <p class="text-gray-300">Nobody likes this image yet.</p>
             {% endfor %}
             {% endwith %}
+            <span class="count">
+                {{total_views}} view {{total_views|pluralize}}
+            </span>
         </div>
     </div>
 

@@ -11,7 +11,7 @@ def create_action(user, verb, target=None):
     similar_actions = Action.objects.filter(
         user_id=user.id,
         verb=verb,
-        created_gte=last_minute,
+        created__gte=last_minute,
     )
 
     if target:
@@ -24,5 +24,6 @@ def create_action(user, verb, target=None):
         # no existing actions found
         action = Action(user=user, verb=verb, target=target)
         action.save()
+        print("saved")
         return True
     return False

@@ -48,6 +48,7 @@ def dashboard(request):
     context = {
         "section": "dashboard",
         "actions": actions,
+        "user": request.user,
     }
     return render(request, template_name, context)
 
@@ -67,7 +68,8 @@ def register(request):
             "new_user": new_user,
             "username": user_form.cleaned_data.get("username"),
         }
-        create_action(request.user, "created account")
+        print("Creating activity stream ######################")
+        create_action(new_user, "created account")
         return render(request, template_name, context)
     else:
         print(user_form.errors)
@@ -90,6 +92,7 @@ def edit(request):
         if user_form.is_valid() and profile_form.is_valid():
             user_form.save()
             profile_form.save()
+            create_action(request.user, "edited their profile")
 
     else:
         user_form = UserEditForm(instance=user)

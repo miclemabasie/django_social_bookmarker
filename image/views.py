@@ -9,6 +9,13 @@ from django.contrib import messages
 from .forms import ImageCreateForm
 from .models import Image
 from actions.utils import create_action
+import redis
+from django.conf import settings
+
+# Connect to redis
+r = redis.Redis(
+    host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=settings.REDIS_DB
+)
 
 
 @login_required
@@ -44,10 +51,15 @@ def image_create(request):
 @login_required
 def image_detail(request, slug):
     image = get_object_or_404(Image, slug=slug)
+    # increment total image views by 1
+    total_views = r.incr(f"image:{image.id}:views")
+    # increment image ranking by 1
+    r.zincrby("image_ranking", 1, image.id)
     user = request.user
     context = {
         "image": image,
         "user": user,
+        "total_views": total_views,
     }
     template_name = "images/image/details.html"
     return render(request, template_name, context)
@@ -80,7 +92,7 @@ def image_like(request):
 
 @login_required
 def image_list(request):
-    images = Image.objects.all()
+    images = Image.objects.order_by("-total_likes")
     paginator = Paginator(images, 6)
     page = request.GET.get("page")
     try:
@@ -103,12 +115,16 @@ def image_list(request):
 
 
 @login_required
-def list_view(request):
-    images = Image.objects.all()
-
-    template_name = "images/image/list.html"
+def image_ranking(request):
+    # Get image ranking dictionary
+    image_ranking = r.zrange("image_ranking", 0, -1, desc=True)[:10]
+    image_ranking_ids = [int(id) for id in image_ranking]
+    # get most viewe images
+    most_viewed = list(Image.objects.filter(id__in=image_ranking_ids))
+    most_viewed.sort(key=lambda x: image_ranking_ids.index(x.id))
+    template_name = "images/image/ranking.html"
     context = {
-        "images": images,
+        "section": "images",
+        "most_viewed": most_viewed,
     }
-
     return render(request, template_name, context)
