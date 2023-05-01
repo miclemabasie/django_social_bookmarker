@@ -1,5 +1,11 @@
 # django_social_bookmarker
 
+- [django\_social\_bookmarker](#django_social_bookmarker)
+  - [This project implements the following](#this-project-implements-the-following)
+    - [Buiilding a socail website](#buiilding-a-socail-website)
+    - [Sharing content on the website](#sharing-content-on-the-website)
+    - [Tracking user actions on the website](#tracking-user-actions-on-the-website)
+
 
 ## This project implements the following
 
@@ -27,3 +33,4 @@
 - Optimizing QuerySets for related objects
 - Using signals for denormalizing counts
 - Storing item views in Redis
+  
